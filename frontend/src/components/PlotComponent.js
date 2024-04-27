@@ -1,53 +1,37 @@
 /**
- * PlotComponent.js
- * 
- * Renders EPSI data plots using Plotly.js, dynamically updating to reflect prop changes.
- * It calculates plot dimensions and grid alignment based on provided prop values.
- * 
- * @version 1.1.0
+ * @fileoverview PlotComponent.js manages the rendering of EPSI data plots using Plotly.js,
+ * dynamically updating to reflect prop changes and handling user interactions and window resizing.
+ *
+ * @version 1.2.1
  * @author Benjamin Yoon
- * @date 2024-03-01
+ * @date 2024-04-26
  */
 
 import React, { useEffect, useRef } from 'react';
 import Plotly from 'plotly.js';
 
 /**
- * Component to render dynamic EPSI data plots using Plotly.js.
- * Adjusts plots based on user interactions and window size.
- *
- * Props:
- * - xEpsi, epsi: Arrays containing the X and Y data for the EPSI plot.
- * - columns, rows: The number of columns and rows in the EPSI grid.
- * - lroFid, lpeFid: Longitudinal and perpendicular fiducial lengths.
- * - lroEpsi, lpeEpsi: Longitudinal and perpendicular EPSI lengths.
- * - plotShift: Object containing X and Y shift values for the plot.
- * - windowSize: Object containing width and height of the window.
- * - showEpsi: Boolean indicating if EPSI data should be displayed.
+ * Renders dynamic EPSI data plots using Plotly.js.
+ * @param {Object} props Component props.
  */
 function PlotComponent({ xEpsi, epsi, columns, spectralData, rows, lroFid, lpeFid, lroEpsi, lpeEpsi, plotShift, windowSize, showEpsi }) {
     const plotContainerRef = useRef(null);
 
-    // Effect hook to redraw plot when window size changes.
+    // Redraws plot when dependencies change.
     useEffect(() => {
         updatePlot();
     }, [windowSize, showEpsi, xEpsi, epsi, columns, rows, lroFid, lpeFid, lroEpsi, lpeEpsi, plotShift]);
 
+    /**
+     * Updates the plot based on the current state and props.
+     */
     const updatePlot = () => {
         try {
-            // Calculate plot domain based on input props.
             const domain = calculateDomain(lroFid, lroEpsi, plotShift[0], columns, lpeFid, lpeEpsi, plotShift[1], rows);
-
-            // Process EPSI data, excluding out-of-range values.
-            const processedEpsi = epsi.map(value => (value < 0.1 || value > 9.9) ? null : value);
-
-            // Prepare grid data.
+            const processedEpsi = epsi.map(value => (value < 0.01 || value > 9.99) ? null : value);
             const gridData = prepareGridData(domain, columns, rows);
-
-            // Generate plot data, including EPSI line data if visible.
             const plotData = showEpsi ? [...gridData, createLineData(xEpsi, processedEpsi)] : gridData;
 
-            // Configure and render plot.
             const layout = configureLayout(domain, columns, spectralData, rows, plotContainerRef, gridData);
             Plotly.react(plotContainerRef.current, plotData, layout, { staticPlot: true });
         } catch (error) {
@@ -63,10 +47,15 @@ function PlotComponent({ xEpsi, epsi, columns, spectralData, rows, lroFid, lpeFi
 }
 
 /**
- * Calculates the domain for the plot based on provided parameters.
- * @param {number} lroFid, lpeFid, lroEpsi, lpeEpsi: Fiducial and EPSI lengths.
- * @param {number} plotShiftX, plotShiftY: Shifts in X and Y directions.
- * @param {number} columns, rows: Number of columns and rows in the grid.
+ * Calculates the domain for the plot based on given parameters.
+ * @param {number} lroFid - Longitudinal fiducial length.
+ * @param {number} lroEpsi - Longitudinal EPSI length.
+ * @param {number} plotShiftX - Shift in the X direction.
+ * @param {number} columns - Number of columns in the grid.
+ * @param {number} lpeFid - Perpendicular fiducial length.
+ * @param {number} lpeEpsi - Perpendicular EPSI length.
+ * @param {number} plotShiftY - Shift in the Y direction.
+ * @param {number} rows - Number of rows in the grid.
  * @returns {Object} Domain object with x and y arrays.
  */
 function calculateDomain(lroFid, lroEpsi, plotShiftX, columns, lpeFid, lpeEpsi, plotShiftY, rows) {
@@ -83,18 +72,17 @@ function calculateDomain(lroFid, lroEpsi, plotShiftX, columns, lpeFid, lpeEpsi, 
 }
 
 /**
- * Prepares grid data for plotting based on domain and grid size.
- * @param {Object} domain: Plot domain.
- * @param {number} columns, rows: Grid dimensions.
- * @returns {Array} Grid data for plotting.
+ * Prepares grid data for plotting based on the domain and grid size.
+ * @param {Object} domain - Plot domain.
+ * @param {number} columns - Grid columns.
+ * @param {number} rows - Grid rows.
+ * @returns {Array} Array of grid data for plotting.
  */
 function prepareGridData(domain, columns, rows) {
     const gridData = [];
-    // Horizontal grid lines
     for (let i = 0; i <= columns; i++) {
         gridData.push({
             type: 'line',
-            // Align grid lines with the domain
             x0: domain.x[0] + (i / columns) * (domain.x[1] - domain.x[0]),
             y0: domain.y[0],
             x1: domain.x[0] + (i / columns) * (domain.x[1] - domain.x[0]),
@@ -103,11 +91,9 @@ function prepareGridData(domain, columns, rows) {
             xref: 'paper', yref: 'paper'
         });
     }
-    // Vertical grid lines
     for (let j = 0; j <= rows; j++) {
         gridData.push({
             type: 'line',
-            // Align grid lines with the domain
             x0: domain.x[0],
             y0: domain.y[0] + (j / rows) * (domain.y[1] - domain.y[0]),
             x1: domain.x[1],
@@ -120,8 +106,9 @@ function prepareGridData(domain, columns, rows) {
 }
 
 /**
- * Creates line data for EPSI plot.
- * @param {Array} xEpsi, processedEpsi: X and Y data for the plot.
+ * Creates line data for the EPSI plot.
+ * @param {Array} xEpsi - X data for the plot.
+ * @param {Array} processedEpsi - Processed Y data for the plot.
  * @returns {Object} Line data object for plotting.
  */
 function createLineData(xEpsi, processedEpsi) {
@@ -131,20 +118,20 @@ function createLineData(xEpsi, processedEpsi) {
         type: 'scatter',
         mode: 'lines',
         line: { color: '#FF00FF', width: 1 },
-        connectgaps: false, // Prevent connecting lines across gaps.
+        connectgaps: false,
         xaxis: 'x',
         yaxis: 'y'
     };
 }
 
 /**
- * Configures plot layout based on domain and container dimensions.
- * @param {Object} domain: Plot domain.
- * @param {number} columns: Number of columns in the grid.
- * @param {Array} spectralData: Spectral data for width calculation.
- * @param {number} rows: Number of rows in the grid.
- * @param {Object} plotContainerRef: Ref to the plot container.
- * @param {Object} gridData Grid data object for plotting.
+ * Configures the layout of the plot based on domain and container dimensions.
+ * @param {Object} domain - Plot domain.
+ * @param {number} columns - Number of columns in the grid.
+ * @param {Array} spectralData - Spectral data for width calculation.
+ * @param {number} rows - Number of rows in the grid.
+ * @param {Object} plotContainerRef - Reference to the plot container.
+ * @param {Array} gridData - Grid data for plotting.
  * @returns {Object} Layout configuration for the plot.
  */
 function configureLayout(domain, columns, spectralData, rows, plotContainerRef, gridData) {
@@ -175,7 +162,7 @@ function configureLayout(domain, columns, spectralData, rows, plotContainerRef, 
         height: plotContainerRef.current.offsetHeight,
         shapes: gridData.map(line => ({
             ...line,
-            line: { ...line.line, color: 'rgba(255, 255, 255, 0.5)' } // Set color with transparency
+            line: { ...line.line, color: 'rgba(255, 255, 255, 0.5)' }
         }))
     };
 }

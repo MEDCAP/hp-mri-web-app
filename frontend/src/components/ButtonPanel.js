@@ -1,13 +1,12 @@
 /**
- * ButtonPanel.js
+ * @fileoverview ButtonPanel.js renders a panel containing interactive buttons for various
+ * functionalities within the HP MRI Web Application. It allows users to toggle EPSI plot
+ * visibility, adjust plot position, save the current state as an image, upload datasets,
+ * and adjust the threshold for data display.
  *
- * Renders a panel containing interactive buttons for various functionalities within the HP MRI Web Application.
- * This includes buttons for toggling EPSI plot visibility, adjusting plot position, saving the current state as an image,
- * and uploading a dataset. Icons are used to visually represent the actions, providing a more intuitive user experience.
- * 
- * Version 1.2.0: Introduces a refined GUI with new controls and layout adjustments and official title: HP MRI Web Application.
- * Author: Benjamin Yoon
- * Date: 2024-04-16
+ * @version 1.2.1
+ * @author Benjamin Yoon
+ * @date 2024-04-26
  */
 
 import React, { useState, useRef } from 'react';
@@ -21,14 +20,16 @@ import down from './icons/down.png';
 import reset from './icons/reset.png';
 
 function ButtonPanel({
-    toggleEpsi, onMoveUp, onMoveLeft, onMoveDown, onMoveRight, onResetPlotShift, onFileUpload
+    toggleEpsi, onMoveUp, onMoveLeft, onMoveDown, onMoveRight, onResetPlotShift,
+    onFileUpload, onThresholdChange, toggleSelecting, selecting, setSelectedGroup,
+    selectedGroup, resetVoxels, thresholdValue
 }) {
     const [isEpsiOn, setIsEpsiOn] = useState(false);
     const fileInputRef = useRef();
 
     /**
-     * Toggles the visibility of the EPSI plot.
-     * @param {boolean} newStatus - True to show the EPSI plot, false to hide it.
+     * Toggles EPSI plot visibility.
+     * @param {string} newStatus - 'on' to show the EPSI plot, 'off' to hide it.
      */
     const handleToggleEpsi = (newStatus) => {
         setIsEpsiOn(newStatus === 'on');
@@ -36,20 +37,27 @@ function ButtonPanel({
     };
 
     /**
-     * Triggers movement of the EPSI plot based on the given direction.
-     * @param {string} direction - Direction to move the plot ('up', 'down', 'left', 'right').
+     * Handles directional movement of the EPSI plot.
+     * @param {string} direction - The direction to move the plot ('up', 'down', 'left', 'right').
      */
     const handleMove = (direction) => {
-        switch (direction) {
-            case 'up': onMoveUp(); break;
-            case 'down': onMoveDown(); break;
-            case 'left': onMoveLeft(); break;
-            case 'right': onMoveRight(); break;
-            default: console.error("Invalid direction");
+        const movementActions = {
+            'up': onMoveUp,
+            'down': onMoveDown,
+            'left': onMoveLeft,
+            'right': onMoveRight
+        };
+        const action = movementActions[direction];
+        if (action) {
+            action();
+        } else {
+            console.error("Invalid direction");
         }
     };
 
-    // Save the current state as a PNG image.
+    /**
+     * Initiates a screen capture of the current application state and saves as PNG.
+     */
     const handleSaveScreenshot = () => {
         html2canvas(document.body).then(canvas => {
             const link = document.createElement('a');
@@ -61,14 +69,16 @@ function ButtonPanel({
         });
     };
 
-    // Trigger file upload dialog.
+    /**
+     * Opens file upload dialog.
+     */
     const handleFileSelect = () => {
         fileInputRef.current.click();
     };
 
     /**
-     * Handles the files selected for upload and passes them to the parent component.
-     * @param {Event} event - Event triggered on file selection.
+     * Handles file selection for upload.
+     * @param {Event} event - The file selection event.
      */
     const handleFileChange = (event) => {
         const files = event.target.files;
@@ -79,7 +89,6 @@ function ButtonPanel({
 
     return (
         <div className="top-panel">
-            {/* Upload dataset button */}
             <div className="icon-button-container">
                 <button className="icon-button" onClick={handleFileSelect}>
                     <img src={databaseIcon} alt="Upload Icon" className="button-icon" />
@@ -87,16 +96,13 @@ function ButtonPanel({
                 <span className="button-text">Database</span>
                 <input
                     type="file"
-                    webkitdirectory="true"
-                    mozdirectory="true"
-                    directory="true"
+                    multiple
                     style={{ display: 'none' }}
                     onChange={handleFileChange}
                     ref={fileInputRef}
                 />
             </div>
 
-            {/* Save as PNG button */}
             <div className="icon-button-container">
                 <button className="icon-button" onClick={handleSaveScreenshot}>
                     <img src={saveIcon} alt="Save Icon" className="button-icon" />
@@ -104,7 +110,6 @@ function ButtonPanel({
                 <span className="button-text">Save</span>
             </div>
 
-            {/* EPSI toggle radio buttons */}
             <div className="epsi-radio-buttons">
                 <label className="radio-button-label">
                     <input
@@ -129,7 +134,6 @@ function ButtonPanel({
                 <span className="epsi-button-text">EPSI</span>
             </div>
 
-            {/* Plot position adjustment buttons */}
             <div className="button-container">
                 <div className="top-button-group">
                     <button className="button" onClick={() => handleMove('up')}>
@@ -157,6 +161,50 @@ function ButtonPanel({
                 <span className="button-text-reset">Plot reset</span>
             </div>
 
+            <div className="icon-button-container">
+                <button className="get-voxels-button" onClick={toggleSelecting}>
+                    {selecting ? 'Stop Selecting' : 'Get Voxels'}
+                </button>
+                <button className="get-voxels-button" onClick={resetVoxels}>
+                    {'Reset'}
+                </button>
+                <div>
+                    <label>
+                        <input type="radio" checked={selectedGroup === 'A'} onChange={() => setSelectedGroup('A')} />
+                        Group A
+                    </label>
+                    <label>
+                        <input type="radio" checked={selectedGroup === 'B'} onChange={() => setSelectedGroup('B')} />
+                        Group B
+                    </label>
+                </div>
+                <span className="button-text">Functions</span>
+            </div>
+
+            <div className="slider-threshold">
+                <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.1"
+                    value={thresholdValue}
+                    onChange={onThresholdChange}
+                    className="image-slice-slider"
+                />
+                <label
+                    style={{
+                        position: 'absolute',
+                        left: '-30px',
+                        marginTop: '-20px',
+                        color: '#6c6c70',
+                        backgroundColor: 'transparent',
+                        border: 'none',
+                        fontSize: '15px',
+                        padding: '2px 5px',
+                    }}
+                >{thresholdValue}</label>
+                <span className="slider-threshold-text">Threshold</span>
+            </div>
         </div>
     );
 }

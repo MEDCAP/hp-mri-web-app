@@ -1,25 +1,22 @@
 /**
- * App.css
- *
- * Central styling for the HP MRI data visualization tool. This file includes styles for layout,
- * control panels, image and plot alignment, and buttons. It ensures a consistent look and feel
- * across the application and supports responsive design.
- *
+ * @fileoverview Styles for the HP MRI data visualization tool. Provides layout control,
+ * alignment for images and plots, and consistent theming across the application.
  * @author Benjamin Yoon
- * @date 2024-04-16
- * @version 1.2.0
+ * @date 2024-04-26
+ * @version 1.2.1
  */
 
-/* General layout and container styles */
+/* Base layout styles */
 .App {
   display: flex;
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
-  background-color: black;
+  background-color: #000;
+  /* black */
 }
 
-/* Styling for the slider control panel */
+/* Control panel styles */
 .slider-container {
   position: fixed;
   left: 0;
@@ -29,7 +26,9 @@
   height: 100vh;
   padding: 10px;
   background-color: #aeaeb2;
-  color: white;
+  /* iOS Gray */
+  color: #fff;
+  /* white */
   z-index: 9;
   overflow-y: auto;
   display: flex;
@@ -51,7 +50,7 @@
   width: 100%;
 }
 
-/* Container styling for image and plot alignment */
+/* Image and plot container */
 .image-and-plot-container {
   position: relative;
   width: 100vw;
@@ -70,10 +69,10 @@
   z-index: 1;
 }
 
-/* Specific styles for proton images to maintain aspect ratio */
 .proton-image {
   width: 40vw;
   height: auto;
+  /* maintain aspect ratio */
 }
 
 /* Styling for the plot container */
@@ -84,66 +83,95 @@
   transform: translate(-72.35%, -71%);
 }
 
-/* Styling for button containers */
+/* Button styles */
+.button-container,
+.reset-button-container,
+.icon-button-container,
+.get-voxels-button {
+  display: inline-block;
+  text-align: center;
+}
+
 .button-container {
-  display: flex;
   flex-direction: column;
   align-items: center;
   z-index: 11;
-  display: inline-block;
   margin-left: 7.5px;
-  text-align: center;
-  margin-top: 0px;
 }
 
-/* General button styles */
-.button {
+.top-button-group {
+  margin-bottom: 2.5px;
+}
+
+.bottom-button-group {
+  display: flex;
+  width: 100%;
+}
+
+.reset-button-container {
+  margin-left: 10px;
+}
+
+.icon-button-container {
+  margin: 5px;
+  margin-left: 20px;
+}
+
+.get-voxels-button {
+  border: 2px solid #6c6c70;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  background-color: inherit;
+  cursor: pointer;
+  outline: none;
+  transition: box-shadow 0.3s ease;
+  margin-right: 2.5px;
+}
+
+.button,
+.icon-button,
+.reset-button {
   display: inline-block;
   border: 2px solid #6c6c70;
-  border-radius: 5px;
+  border-radius: 10px;
   padding: 0px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
   background-color: inherit;
   cursor: pointer;
   outline: none;
   transition: box-shadow 0.3s ease;
+}
+
+.button {
+  border-radius: 5px;
   width: 22px;
   margin-top: 0px;
 }
 
-/* Top button */
-.top-button-group {
-  margin-bottom: 2.5px;
+.button:hover,
+.icon-button:hover,
+.reset-button:hover,
+.get-voxels-button:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
-/* Bottom button */
-.bottom-button-group {
-  display: flex;
-  width: 100%;
-}
-
-/* Reset button specific styles */
-.button-reset {
-  width: 30px;
-  height: auto;
-}
-
-/* Footer styling with fixed positioning */
+/* Footer styles */
 footer {
   position: fixed;
   left: 50px;
   bottom: 0;
   width: 100%;
-  text-align: center;
   padding: 10px 0;
-  color: gray;
+  text-align: center;
+  color: #808080;
+  /* gray */
   z-index: 12;
   font-size: 12px;
 }
 
-/* Link styling within the footer */
 footer a {
   color: #F8F8F8;
+  /* off-white */
   text-decoration: none;
 }
 
@@ -152,7 +180,7 @@ footer a:hover {
   text-decoration: underline;
 }
 
-/* Keyframe animations for any logos */
+/* Keyframe animations for branding elements */
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
@@ -161,6 +189,151 @@ footer a:hover {
   to {
     transform: rotate(360deg);
   }
+}
+
+/* Additional styles */
+.epsi-radio-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-left: 7.5px;
+  margin-right: 7.5px;
+}
+
+.slider-threshold {
+  justify-content: center;
+  align-items: center;
+  color: white;
+  z-index: 9;
+  position: fixed;
+  top: 25px;
+  padding: 0px;
+  background-color: inherit;
+  cursor: pointer;
+  outline: none;
+  transition: box-shadow 0.3s ease;
+  display: inline-block;
+  margin: 5px;
+  margin-left: 620px;
+  text-align: center;
+}
+
+.vertical-slider-container {
+  transform-origin: top left;
+  left: 50%;
+  top: 100%;
+}
+
+.image-slice-slider,
+.vertical-slider {
+  -webkit-appearance: none;
+  outline: none;
+}
+
+.image-slice-slider {
+  width: 100%;
+  height: 8px;
+  background: #e6e6e6;
+  border-radius: 5px;
+}
+
+.vertical-slider {
+  width: 8px;
+  height: 100px;
+  background: transparent;
+  opacity: 0.7;
+  -webkit-transform: rotate(270deg);
+  transform: rotate(270deg);
+  -webkit-transition: .2s;
+  transition: background-color .2s ease;
+}
+
+.image-slice-slider::-webkit-slider-thumb,
+.vertical-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+.image-slice-slider::-webkit-slider-thumb {
+  width: 20px;
+  height: 20px;
+  background: #ccc;
+  border: 1px solid #999;
+  border-radius: 50%;
+  margin-top: -6px;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
+}
+
+.vertical-slider::-webkit-slider-thumb {
+  appearance: none;
+  height: 102%;
+  width: 4px;
+  background: #999;
+  margin-top: -2px;
+}
+
+.image-slice-slider:focus::-webkit-slider-thumb {
+  background: #00c7be;
+  /* Teal highlight */
+}
+
+.image-slice-slider:focus::-moz-range-thumb {
+  background: #00c7be;
+  /* Teal highlight */
+}
+
+.image-slice-slider:focus::-ms-thumb {
+  background: #00c7be;
+  /* Teal highlight */
+}
+
+.vertical-slider:focus::-webkit-slider-thumb {
+  background: #00c7be;
+  /* Teal highlight */
+}
+
+.vertical-slider:focus::-moz-range-thumb {
+  background: #00c7be;
+  /* Teal highlight */
+}
+
+.vertical-slider:focus::-ms-thumb {
+  background: #00c7be;
+  /* Teal highlight */
+}
+
+.epsi-button-text,
+.button-text,
+.button-text-shift,
+.button-text-reset,
+.slider-threshold-text {
+  color: #6c6c70;
+  /* iOS Dark Gray */
+  font-size: 15px;
+  margin-top: 7.5px;
+  display: block;
+}
+
+.epsi-button-text {
+  margin-left: 7.5px;
+}
+
+.button-text-shift {
+  margin-top: 2px;
+}
+
+.button-text-reset {
+  margin-top: 16px;
+}
+
+.slider-threshold-text {
+  margin-top: 20px;
+}
+
+/* Reset button specific styles */
+.button-reset {
+  width: 30px;
+  height: auto;
 }
 
 .top-panel {
@@ -196,29 +369,6 @@ footer a:hover {
   right: 7px;
 }
 
-/* Custom styles for the image slice slider */
-.image-slice-slider {
-  -webkit-appearance: none;
-  width: 100%;
-  height: 8px;
-  background: #e6e6e6;
-  border-radius: 5px;
-  outline: none;
-}
-
-/* Styles for the slider thumb (the draggable circle) for WebKit browsers */
-.image-slice-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 20px;
-  height: 20px;
-  background: #ccc;
-  border: 1px solid #999;
-  border-radius: 50%;
-  cursor: pointer;
-  margin-top: -6px;
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
-}
-
 /* Styles for the slider thumb for Mozilla browsers */
 .image-slice-slider::-moz-range-thumb {
   width: 20px;
@@ -241,21 +391,6 @@ footer a:hover {
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* Styles for the focus state of the slider thumb */
-.image-slice-slider:focus::-webkit-slider-thumb {
-  background: #00c7be;
-}
-
-.image-slice-slider:focus::-moz-range-thumb {
-  background: #00c7be;
-  /* Slightly darker grey for focused state */
-}
-
-.image-slice-slider:focus::-ms-thumb {
-  background: #00c7be;
-  /* Slightly darker grey for focused state */
-}
-
 .app-content {
   border: 7.5px solid #aeaeb2;
   /* Your preferred border color */
@@ -270,41 +405,6 @@ footer a:hover {
   box-sizing: border-box;
   /* Includes border in the height calculation */
   z-index: 8;
-}
-
-.vertical-slider-container {
-  /* This container will help position the vertical sliders */
-  transform-origin: top left;
-  left: 50%;
-  top: 100%;
-}
-
-.vertical-slider {
-  -webkit-appearance: none;
-  width: 8px;
-  /* Desired width of the track */
-  height: 100px;
-  /* Desired height of the slider */
-  background: transparent;
-  /* Slider background to be transparent */
-  outline: none;
-  opacity: 0.7;
-  -webkit-transform: rotate(270deg);
-  transform: rotate(270deg);
-  -webkit-transition: .2s;
-  transition: background-color .2s ease;
-}
-
-.vertical-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  height: 102%;
-  width: 4px;
-  background: #999;
-  cursor: pointer;
-  /* Position the thumb in the center of the track */
-  margin-top: -2px;
-  /* Half the height to center it */
 }
 
 .vertical-slider::-webkit-slider-runnable-track {
@@ -352,54 +452,9 @@ footer a:hover {
   margin: 0 5px;
 }
 
-.icon-button-container {
-  display: inline-block;
-  /* Wrap the button and text */
-  margin: 5px;
-  /* Space around the container */
-  margin-left: 20px;
-  text-align: center;
-  /* Center everything in the container */
-}
-
-.icon-button {
-  display: inline-block;
-  border: 2px solid #6c6c70;
-  border-radius: 10px;
-  padding: 0px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-  background-color: inherit;
-  cursor: pointer;
-  outline: none;
-  transition: box-shadow 0.3s ease;
-}
-
-.icon-button:hover {
-  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
-}
-
 .button-icon {
   width: 40px;
   height: auto;
-}
-
-.button-text {
-  display: block;
-  /* Display text below the button */
-  margin-top: 7.5px;
-  /* Space between button and text */
-  color: #6c6c70;
-  font-size: 15px;
-}
-
-.epsi-radio-buttons {
-  display: flex;
-  flex-direction: column;
-  /* Stack the buttons vertically */
-  align-items: flex-start;
-  /* Align them to the start of the flex container */
-  margin-left: 7.5px;
-  margin-right: 7.5px;
 }
 
 .radio-button-label {
@@ -409,24 +464,10 @@ footer a:hover {
   /* Block-level to respect margin-bottom */
 }
 
-.epsi-button-text {
-  display: block;
-  /* Display text below the button */
-  margin-top: 7.5px;
-  /* Space between button and text */
-  color: #6c6c70;
-  font-size: 15px;
-  margin-left: 7.5px;
-}
-
 /* Custom variables for dynamic offset application */
 :root {
   --epsi-grid-offset-x: 0px;
   --epsi-grid-offset-y: 0px;
-}
-
-.button:hover {
-  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
 }
 
 .button img {
@@ -435,44 +476,28 @@ footer a:hover {
   height: auto;
 }
 
-.reset-button-container {
-  display: inline-block;
-  /* Wrap the button and text */
-  margin-left: 10px;
-  text-align: center;
-  /* Center everything in the container */
+/* Styles for displaying selected voxels */
+.voxel-display {
+  position: fixed;
+  right: 1vw;
+  top: 120px;
+  padding: 10px;
+  width: 210px;
+  z-index: 5;
 }
 
-.reset-button {
-  display: inline-block;
-  border: 2px solid #6c6c70;
-  border-radius: 10px;
-  padding: 0px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-  background-color: inherit;
-  cursor: pointer;
-  outline: none;
-  transition: box-shadow 0.3s ease;
+.voxel-display h3 {
+  color: #aeaeb2;
+  font-size: 1vw;
 }
 
-.reset-button:hover {
-  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
+/* Styles for individual voxel data entries */
+.voxel-display div {
+  font-size: 0.75vw;
+  color: #aeaeb2;
+  margin-top: 5px;
 }
 
-.button-text-shift {
-  display: block;
-  /* Display text below the button */
-  margin-top: 2px;
-  /* Space between button and text */
-  color: #6c6c70;
-  font-size: 15px;
-}
-
-.button-text-reset {
-  display: block;
-  /* Display text below the button */
-  margin-top: 16px;
-  /* Space between button and text */
-  color: #6c6c70;
-  font-size: 15px;
+.get-voxels-button {
+  margin-bottom: 5px;
 }

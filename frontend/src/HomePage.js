@@ -1,17 +1,15 @@
 /**
- * HomePage.js
+ * @fileoverview HomePage.js serves as the central interface for the HP MRI Web Application,
+ * providing functionalities such as displaying proton images, adjusting EPSI plots,
+ * and offering navigation to the About page. Version 1.2.1 introduces the ability to
+ * select voxels for analysis and dynamically adjust the EPSI data threshold via a new slider control.
  *
- * The HomePage component serves as the central interface for the HP MRI Web Application.
- * It provides functionalities such as displaying proton images, adjusting EPSI plots,
- * and offering navigation to the About page. This version introduces an updated GUI
- * with improved controls for enhanced data visualization and user interaction.
- *
- * Version 1.2.0: Introduces a refined GUI with new controls and layout adjustments and official title: HP MRI Web Application.
- * Author: Benjamin Yoon
- * Date: 2024-04-16
+ * @version 1.2.1
+ * @author Benjamin Yoon
+ * @date 2024-04-26
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 import ControlPanel from './components/ControlPanel';
 import ButtonPanel from './components/ButtonPanel';
@@ -19,24 +17,33 @@ import PlotComponent from './components/PlotComponent';
 import { Link } from 'react-router-dom';
 
 function HomePage() {
-  // State hooks for image URL and EPSI data visualization.
   const [imageURL, setImageURL] = useState('');
   const [epsiData, setEpsiData] = useState({
     xEpsi: [], epsi: [], columns: 0, spectralData: [], rows: 0,
     lroFid: 0, lpeFid: 0, lroEpsi: 0, lpeEpsi: 0, plotShift: [0, 0]
   });
-  const [showEpsi, setShowEpsi] = useState(false); // Flag for EPSI plot display.
-  // Offsets for EPSI plot positioning.
+  const [showEpsi, setShowEpsi] = useState(false);
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
-  // Window dimensions for responsive design.
   const [windowSize, setWindowSize] = useState({ width: window.innerWidth, height: window.innerHeight });
   const [epsiValue, setEpsiValue] = useState(3);
+  const [selecting, setSelecting] = useState(false);
+  const [selectedGroup, setSelectedGroup] = useState('A');
+  const [groupA, setGroupA] = useState([]);
+  const [groupB, setGroupB] = useState([]);
+  const plotContainerRef = useRef(null);
+  const [offsetSelectX, setOffsetSelectX] = useState(-263); // X offset for voxel selection
+  const [offsetSelectY, setOffsetSelectY] = useState(-98); // Y offset for voxel selection
+  const [scaleOffsetX, setScaleOffsetX] = useState(1.335); // Scale factor for columns during selection
+  const [scaleOffsetY, setScaleOffsetY] = useState(1.875); // Scale factor for rows during selection
+  const [threshold, setThreshold] = useState(0.2); // Initial threshold value for EPSI data filtering
 
   // Effect hook for initial data fetch and window resize event listener.
   useEffect(() => {
     fetchInitialData();
-    const handleResize = () => setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+    const handleResize = () => {
+      setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+    };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -56,25 +63,53 @@ function HomePage() {
 
   // File upload handler.
   const handleFileUpload = (files) => {
-    const fileList = Array.from(files); // Convert FileList to array for easier processing.
-
-    fileList.forEach((file) => {
-    });
-
-    const formData = new FormData();
-    fileList.forEach(file => formData.append('files', file));
-
+    const fileList = Array.from(files);
+    const formData = new FormData(fileList.map(file => formData.append('files', file)));
     const uploadEndpoint = 'http://127.0.0.1:5000/api/upload';
     fetch(uploadEndpoint, { method: 'POST', body: formData })
       .then(response => response.json())
-      .then(data => console.log(data))
       .catch(error => console.error('Error uploading files:', error));
   };
+
+  const handleVoxelSelect = (event) => {
+    if (!selecting || !plotContainerRef.current) return;
+    const plotRect = plotContainerRef.current.getBoundingClientRect();
+    const xInsidePlot = event.clientX - plotRect.left - offsetSelectX;
+    const yInsidePlot = event.clientY - plotRect.top - offsetSelectY;
+    if (xInsidePlot >= 0 && xInsidePlot <= plotRect.width - offsetSelectX - 450 && yInsidePlot >= 0 && yInsidePlot <= plotRect.height - offsetSelectY - 370) {
+      const scaleX = (epsiData.columns / plotRect.width) * scaleOffsetX;
+      const scaleY = (epsiData.rows / plotRect.height) * scaleOffsetY;
+      const column = Math.floor(xInsidePlot * scaleX);
+      const row = Math.floor(yInsidePlot * scaleY);
+      const voxel = { x: xInsidePlot, y: yInsidePlot, column, row };
+      if (selectedGroup === 'A') {
+        setGroupA([...groupA, voxel]);
+      } else {
+        setGroupB([...groupB, voxel]);
+      }
+    }
+  };
+
+  // Handler for changing the threshold
+  const handleThresholdChange = (event) => setThreshold(event.target.value);
 
   // Data fetch functions for proton image and EPSI data.
   const fetchInitialData = () => {
     sendSliderValueToBackend(3, 1);
     sendEpsiValueToBackend(3);
+  };
+
+  const toggleSelecting = () => setSelecting(!selecting);
+
+  const displayVoxels = (group) => (
+    group.map((voxel, index) => (
+      <div key={index}>{`(X: ${voxel.x.toFixed(2)}, Y: ${voxel.y.toFixed(2)}) (Column: ${voxel.column}, Row: ${voxel.row})`}</div>
+    ))
+  );
+
+  const resetVoxels = () => {
+    setGroupA([]);
+    setGroupB([]);
   };
 
   /**
@@ -95,18 +130,20 @@ function HomePage() {
    * @param {number} newEpsiValue - The new value from the epsi plot slider.
    */
   const sendEpsiValueToBackend = (newEpsiValue) => {
-    fetch(`http://127.0.0.1:5000/api/get_epsi_data/${newEpsiValue}`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-    }).then(response => response.json()).then(data =>
-      setEpsiData(data))
-      .catch(error => console.error(error));
+    const url = `http://127.0.0.1:5000/api/get_epsi_data/${newEpsiValue}?threshold=${threshold}`;
+    fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    })
+      .then(response => response.json())
+      .then(data => setEpsiData(data))
+      .catch(error => console.error('Error fetching EPSI data:', error));
   };
 
   // Render the HomePage component.
   return (
     <div className="App">
-      {/* Top panel with button controls */}
-      <div clssName="top-panel">
+      <div className="top-panel">
         <ButtonPanel
           onEpsiChange={handleEpsiChange}
           toggleEpsi={toggleEpsi}
@@ -116,6 +153,13 @@ function HomePage() {
           onMoveRight={moveRight}
           onResetPlotShift={resetPlotShift}
           onFileUpload={handleFileUpload}
+          onThresholdChange={handleThresholdChange}
+          toggleSelecting={toggleSelecting}
+          selecting={selecting}
+          setSelectedGroup={setSelectedGroup}
+          selectedGroup={selectedGroup}
+          resetVoxels={resetVoxels}
+          thresholdValue={threshold}
         />
       </div>
       <ControlPanel
@@ -124,12 +168,11 @@ function HomePage() {
         onEpsiChange={handleEpsiChange}
         epsiValue={epsiValue}
       />
-      <div className="image-and-plot-container">
+      <div className="image-and-plot-container" onClick={handleVoxelSelect}>
         <div className="app-content">
         </div>
         <img src={imageURL} alt="Proton" className="proton-image" />
-        {/* Plot container with dynamic transformation for positioning */}
-        <div className='plot-container' style={{ transform: `translate(${offsetX}px, ${offsetY}px)` }}>
+        <div className='plot-container' ref={plotContainerRef} style={{ transform: `translate(${offsetX}px, ${offsetY}px)` }}>
           <PlotComponent
             xEpsi={epsiData.xEpsi}
             epsi={epsiData.epsi}
@@ -141,12 +184,19 @@ function HomePage() {
             lroEpsi={epsiData.lroEpsi}
             lpeEpsi={epsiData.lpeEpsi}
             plotShift={epsiData.plotShift}
-            windowSize={windowSize} // Pass window size as a prop
+            windowSize={windowSize}
             showEpsi={showEpsi}
           />
         </div>
+        {selecting && (
+          <div className="voxel-display">
+            <h3>Group A</h3>
+            {displayVoxels(groupA)}
+            <h3>Group B</h3>
+            {displayVoxels(groupB)}
+          </div>
+        )}
       </div>
-      {/* Footer with navigation link to the About page */}
       <footer>
         <Link to="/about">About</Link> • 2024 Universty of Pennsylvania Perelman School of Medicine
       </footer>
