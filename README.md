@@ -1,35 +1,36 @@
 # HP MRI Web Application
 
 ## Introduction
-The Hyperpolarized (HP) Magnetic Resonance Imaging (MRI) Web Application is a dynamic data visualization tool developed by Benjamin Yoon and Medcap Computing at the PIGI Lab (University of Pennsylvania Perelman School of Medicine), designed to facilitate the analysis and interpretation of EPSI (Echo Planar Spectroscopic Imaging) data. Through an intuitive user interface, users can interactively adjust image slices, contrast levels, and dataset parameters, and visualize EPSI grids overlaid on proton images.
+The Hyperpolarized (HP) Magnetic Resonance Imaging (MRI) Web Application, developed by Benjamin Yoon and Medcap Computing at PIGI Lab (University of Pennsylvania Perelman School of Medicine), is a sophisticated data visualization tool designed for the analysis and interpretation of EPSI (Echo Planar Spectroscopic Imaging) data. This application offers an intuitive user interface allowing users to interactively adjust image slices, contrast levels, and dataset parameters, and visualize EPSI grids overlaid on proton images.
 
 ## Features
-**Version 1.0.0** 
-- **Initial Release:** Standard application features.
-- - Interactive sliders for adjusting image slices and contrast.
-- - Real-time EPSI grid overlay on proton images.
+### Version 1.0.0
+- **Initial Release:** Features interactive sliders for adjusting image slices and contrast and real-time EPSI grid overlay on proton images.
 
-**Version 1.0.1**
-- **Responsive Design:** All dimenstions dynamically adjust based on screen resolution.
-- **Enhanced Contrast Control:** Expanded the range of contrast settings for better image visualization.
+### Version 1.0.1
+- **Responsive Design:** Automatically adjusts dimensions based on screen resolution.
+- **Enhanced Contrast Control:** Expanded range of contrast settings for improved image visualization.
 
-**Version 1.1.0**
-- **Interactive Plot Shift Controls:** Introduced buttons and directional arrows to shift the overlay plot relative to the proton image, including a button to reset to the default position.
-- **EPSI Axis Management:** Added functionality to clear and recall the EPSI axis with grid retention; grid and image are displayed by default.
-- **Export Functionality:** Implemented a feature to save the current view as a PNG file.  
+### Version 1.1.0
+- **Interactive Plot Shift Controls:** Introduces buttons and directional arrows to shift the overlay plot relative to the proton image, including a reset button for default positioning.
+- **EPSI Axis Management:** Added functionality to manage EPSI axis with grid retention; displays grid and image by default.
+- **Export Functionality:** Feature to save the current view as a PNG file.
 
-**Version 1.1.1**
-- **Operational Enhancements:** Improve application functionality.
-- **About Page and Branding Updates:** Created an About page, updated the application's logo and title, and included copyright information for Benjamin Yoon, PIGI Lab/Medcap Computing.
-- **Data Management:** Enhanced capability to upload datasets for processing and visualization.
+### Version 1.1.1
+- **Operational Enhancements:** Improved application functionality.
+- **About Page and Branding Updates:** Introduced an About page, updated the application's logo and title, and included copyright information for Benjamin Yoon, PIGI Lab/Medcap Computing.
+- **Data Management:** Enhanced dataset upload capabilities for processing and visualization.
 
-**Version 1.2.0**
-- **UI Refinement:** Refined the user interface to enhance aesthetics and usability, focusing on intuitive design and enhanced user interation. 
-- **Official Title:** Hyperpolarized (HP) Magnetic Resonance (MRI) Web Application.
+### Version 1.2.0
+- **UI Refinement:** Enhanced the user interface to improve aesthetics and usability, focusing on intuitive design and user interaction.
+- **Official Title:** Named as Hyperpolarized (HP) Magnetic Resonance (MRI) Web Application.
+
+### Version 1.2.1
+- **Voxel Selection Tool:** Introduced functionality to select and highlight individual voxels within the EPSI grid for detailed analysis.
+- **Threshold Adjustment:** Implemented a slider to dynamically adjust the minimum peak value of the EPSI data visualization.
 
 ## Installation (Local)
-- Create a new folder with subfolders frontend, backend, and data. Install dependencies for React App in frontend and Flask in backend 
-- Clone the repository to access source code
+Create a directory structure with subfolders for frontend, backend, and data. Install necessary dependencies for a React application in the frontend and Flask in the backend.
 
 ```bash
 git clone https://github.com/benjaminyoon/hpmri-benjaminyoon.git hpmri-local
