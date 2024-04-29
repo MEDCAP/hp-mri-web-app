@@ -1,77 +1,71 @@
 /**
- * ControlPanel.js
+ * @fileoverview ControlPanel.js manages the interactive UI elements for the HP MRI Visualization App.
+ * It provides sliders for adjusting image slice, contrast, and dataset selection. This component
+ * effectively manages application state for these parameters and updates the display based on user interactions.
+ * Version 1.2.2 enhances the UI with added functionality for supporting multiple magnet types and dataset uploading.
  *
- * Provides interactive UI elements for the EPSI Visualization App, enabling
- * users to adjust image slice, contrast, and EPSI dataset values. This
- * component manages the application state for these parameters and updates
- * the display based on user input. Version 1.2.0 includes a refined UI with
- * vertical sliders for contrast and EPSI dataset adjustments, and the official
- * title: HP MRI Web Application.
- *
- * @version 1.2.0
+ * @version 1.2.2
  * @author Benjamin Yoon
- * @date 2024-04-12
+ * @date 2024-04-29
  */
 
 import React, { useState, useEffect } from 'react';
 
 /**
- * Renders a set of UI controls comprising of sliders and displays for image slice
- * and dataset parameters. Adjustments made via the sliders are propagated upwards
- * to the parent component to update the visualization accordingly.
+ * Renders a control panel with sliders to adjust image slice, contrast, and dataset parameters.
+ * Changes are propagated to the parent component to update the main visualization.
+ *
+ * @param {function} onSliderChange Callback to handle changes in the image slice slider.
+ * @param {function} onContrastChange Callback to handle changes in the contrast slider.
+ * @param {function} onDatasetChange Callback to handle changes in the dataset slider.
+ * @param {number} datasetIndex The current index of the selected dataset.
+ * @returns {JSX.Element} The rendered component.
  */
-function ControlPanel({ onSliderChange, onContrastChange, onEpsiChange, epsiValue }) {
-  // States for slider values
+function ControlPanel({ onSliderChange, onContrastChange, onDatasetChange, datasetIndex }) {
   const [sliderValue, setSliderValue] = useState(3);
   const [contrastValue, setContrastValue] = useState(1);
 
-  // Side effect for initializing and updating the slider value display
   useEffect(() => {
     const slider = document.getElementById('imageSliceSlider');
     const sliderValueDisplay = document.getElementById('sliderValueDisplay');
 
-    const updateSliderValuePosition = () => {
+    function updateSliderValueDisplay() {
       const percentage = (slider.value - slider.min) / (slider.max - slider.min);
       const sliderWidth = slider.getBoundingClientRect().width;
       const valueDisplayWidth = sliderValueDisplay.offsetWidth;
-
-      const additionalOffset = 22 - slider.value;
-      const leftPosition = percentage * sliderWidth - (valueDisplayWidth / 2) + additionalOffset;
+      const leftPosition = percentage * sliderWidth - (valueDisplayWidth / 2) + 22 - slider.value;
 
       sliderValueDisplay.style.left = `${leftPosition}px`;
       sliderValueDisplay.textContent = slider.value;
-    };
+    }
 
-    updateSliderValuePosition();
-
-    slider.addEventListener('input', updateSliderValuePosition);
-    window.addEventListener('resize', updateSliderValuePosition);
+    updateSliderValueDisplay();
+    slider.addEventListener('input', updateSliderValueDisplay);
+    window.addEventListener('resize', updateSliderValueDisplay);
 
     return () => {
-      slider.removeEventListener('input', updateSliderValuePosition);
-      window.removeEventListener('resize', updateSliderValuePosition);
+      slider.removeEventListener('input', updateSliderValueDisplay);
+      window.removeEventListener('resize', updateSliderValueDisplay);
     };
-  }, []); // Dependency array left empty to denote effect should run on mount only
+  }, []);
 
-  // Event handlers for the sliders
-  const handleSliderChange = (event) => {
-    const newValue = event.target.value;
+  const handleImageSliceChange = (event) => {
+    const newValue = parseInt(event.target.value);
     setSliderValue(newValue);
     onSliderChange(newValue, contrastValue);
-    const sliderValueDisplay = document.getElementById('sliderValueDisplay');
-    sliderValueDisplay.textContent = newValue;
   };
-  const handleContrastChange = (event) => {
+
+  const handleContrastAdjustment = (event) => {
     const newContrastValue = parseFloat(event.target.value);
     setContrastValue(newContrastValue);
     onContrastChange(sliderValue, newContrastValue);
   };
-  const handleEpsiChange = (event) => {
-    const newEpsiValue = parseInt(event.target.value);
-    onEpsiChange(newEpsiValue);
+
+  const handleDatasetSelection = (event) => {
+    const newDatasetIndex = parseInt(event.target.value);
+    onDatasetChange(newDatasetIndex);
   };
 
-  // JSX rendering the component's UI, including vertical sliders
   return (
     <div>
       <div className="slider-under-top-panel">
@@ -80,7 +74,7 @@ function ControlPanel({ onSliderChange, onContrastChange, onEpsiChange, epsiValu
           min="1"
           max="20"
           value={sliderValue}
-          onChange={handleSliderChange}
+          onChange={handleImageSliceChange}
           className="image-slice-slider"
           id="imageSliceSlider"
         />
@@ -111,22 +105,22 @@ function ControlPanel({ onSliderChange, onContrastChange, onEpsiChange, epsiValu
             max="3.0"
             step="0.1"
             value={contrastValue}
-            onChange={handleContrastChange}
+            onChange={handleContrastAdjustment}
             className="vertical-slider"
             id="contrastSlider"
           />
         </div>
 
         <div className="vertical-slider-container">
-          <h2><label htmlFor="epsiSlider">EPSI: {epsiValue}</label></h2>
+          <h2><label htmlFor="datasetSlider">Dataset: {datasetIndex}</label></h2>
           <input
             type="range"
             min="0"
             max={17}
-            value={epsiValue}
-            onChange={handleEpsiChange}
+            value={datasetIndex}
+            onChange={handleDatasetSelection}
             className="vertical-slider"
-            id="epsiSlider"
+            id="datasetSlider"
           />
         </div>
       </div>

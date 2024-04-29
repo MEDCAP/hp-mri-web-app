@@ -1,36 +1,37 @@
 /**
- * @fileoverview PlotComponent.js manages the rendering of EPSI data plots using Plotly.js,
- * dynamically updating to reflect prop changes and handling user interactions and window resizing.
+ * @fileoverview PlotComponent.js manages the rendering of HP MRI data plots using Plotly.js.
+ * It updates dynamically based on prop changes and handles user interactions and window resizing. 
+ * Version 1.2.2 introduces enhancements for supporting multiple magnet types.
  *
- * @version 1.2.1
+ * @version 1.2.2
  * @author Benjamin Yoon
- * @date 2024-04-26
+ * @date 2024-04-29
  */
 
 import React, { useEffect, useRef } from 'react';
 import Plotly from 'plotly.js';
 
 /**
- * Renders dynamic EPSI data plots using Plotly.js.
- * @param {Object} props Component props.
+ * Renders dynamic HP MRI data plots using Plotly.js.
+ * @param {Object} props Component properties for configuring the plot.
  */
-function PlotComponent({ xEpsi, epsi, columns, spectralData, rows, lroFid, lpeFid, lroEpsi, lpeEpsi, plotShift, windowSize, showEpsi }) {
+function PlotComponent({ xValues, data, columns, spectralData, rows, longitudinalScale, perpendicularScale, longitudinalMeasurement, perpendicularMeasurement, plotShift, windowSize, showHpMriData }) {
     const plotContainerRef = useRef(null);
 
-    // Redraws plot when dependencies change.
+    // Effect hook to redraw plot when dependencies change.
     useEffect(() => {
         updatePlot();
-    }, [windowSize, showEpsi, xEpsi, epsi, columns, rows, lroFid, lpeFid, lroEpsi, lpeEpsi, plotShift]);
+    }, [windowSize, showHpMriData, xValues, data, columns, rows, longitudinalScale, perpendicularScale, longitudinalMeasurement, perpendicularMeasurement, plotShift]);
 
     /**
      * Updates the plot based on the current state and props.
      */
     const updatePlot = () => {
         try {
-            const domain = calculateDomain(lroFid, lroEpsi, plotShift[0], columns, lpeFid, lpeEpsi, plotShift[1], rows);
-            const processedEpsi = epsi.map(value => (value < 0.01 || value > 9.99) ? null : value);
+            const domain = calculateDomain(longitudinalScale, longitudinalMeasurement, plotShift[0], columns, perpendicularScale, perpendicularMeasurement, plotShift[1], rows);
+            const processedData = data.map(value => (value < 0.01 || value > 9.99) ? null : value);
             const gridData = prepareGridData(domain, columns, rows);
-            const plotData = showEpsi ? [...gridData, createLineData(xEpsi, processedEpsi)] : gridData;
+            const plotData = showHpMriData ? [...gridData, createLineData(xValues, processedData)] : gridData;
 
             const layout = configureLayout(domain, columns, spectralData, rows, plotContainerRef, gridData);
             Plotly.react(plotContainerRef.current, plotData, layout, { staticPlot: true });
@@ -47,35 +48,35 @@ function PlotComponent({ xEpsi, epsi, columns, spectralData, rows, lroFid, lpeFi
 }
 
 /**
- * Calculates the domain for the plot based on given parameters.
- * @param {number} lroFid - Longitudinal fiducial length.
- * @param {number} lroEpsi - Longitudinal EPSI length.
- * @param {number} plotShiftX - Shift in the X direction.
- * @param {number} columns - Number of columns in the grid.
- * @param {number} lpeFid - Perpendicular fiducial length.
- * @param {number} lpeEpsi - Perpendicular EPSI length.
- * @param {number} plotShiftY - Shift in the Y direction.
- * @param {number} rows - Number of rows in the grid.
+ * Calculates the domain for the plot based on specified parameters.
+ * @param {number} longitudinalScale Longitudinal fiducial length.
+ * @param {number} longitudinalMeasurement Longitudinal EPSI length.
+ * @param {number} plotShiftX Horizontal shift amount.
+ * @param {number} columns Number of grid columns.
+ * @param {number} perpendicularScale Perpendicular fiducial length.
+ * @param {number} perpendicularMeasurement Perpendicular EPSI length.
+ * @param {number} plotShiftY Vertical shift amount.
+ * @param {number} rows Number of grid rows.
  * @returns {Object} Domain object with x and y arrays.
  */
-function calculateDomain(lroFid, lroEpsi, plotShiftX, columns, lpeFid, lpeEpsi, plotShiftY, rows) {
+function calculateDomain(longitudinalScale, longitudinalMeasurement, plotShiftX, columns, perpendicularScale, perpendicularMeasurement, plotShiftY, rows) {
     return {
         x: [
-            ((lroFid - lroEpsi) / 2 + plotShiftX * lroEpsi / columns) / lroFid,
-            ((lroFid - lroEpsi) / 2 + plotShiftX * lroEpsi / columns) / lroFid + lroEpsi / lroFid
+            ((longitudinalScale - longitudinalMeasurement) / 2 + plotShiftX * longitudinalMeasurement / columns) / longitudinalScale,
+            ((longitudinalScale - longitudinalMeasurement) / 2 + plotShiftX * longitudinalMeasurement / columns) / longitudinalScale + longitudinalMeasurement / longitudinalScale
         ],
         y: [
-            ((lpeFid - lpeEpsi) / 2 + plotShiftY * lpeEpsi / rows) / lpeFid,
-            ((lpeFid - lpeEpsi) / 2 + plotShiftY * lpeEpsi / rows) / lpeFid + lpeEpsi / lpeFid
+            ((perpendicularScale - perpendicularMeasurement) / 2 + plotShiftY * perpendicularMeasurement / rows) / perpendicularScale,
+            ((perpendicularScale - perpendicularMeasurement) / 2 + plotShiftY * perpendicularMeasurement / rows) / perpendicularScale + perpendicularMeasurement / perpendicularScale
         ]
     };
 }
 
 /**
- * Prepares grid data for plotting based on the domain and grid size.
- * @param {Object} domain - Plot domain.
- * @param {number} columns - Grid columns.
- * @param {number} rows - Grid rows.
+ * Prepares grid data for plotting based on domain and grid size.
+ * @param {Object} domain Plot domain.
+ * @param {number} columns Grid columns.
+ * @param {number} rows Grid rows.
  * @returns {Array} Array of grid data for plotting.
  */
 function prepareGridData(domain, columns, rows) {
@@ -106,18 +107,18 @@ function prepareGridData(domain, columns, rows) {
 }
 
 /**
- * Creates line data for the EPSI plot.
- * @param {Array} xEpsi - X data for the plot.
- * @param {Array} processedEpsi - Processed Y data for the plot.
+ * Creates line data for the HP MRI plot.
+ * @param {Array} xValues X data for the plot.
+ * @param {Array} processedData Processed Y data for the plot.
  * @returns {Object} Line data object for plotting.
  */
-function createLineData(xEpsi, processedEpsi) {
+function createLineData(xValues, processedData) {
     return {
-        x: xEpsi,
-        y: processedEpsi,
+        x: xValues,
+        y: processedData,
         type: 'scatter',
         mode: 'lines',
-        line: { color: '#FF00FF', width: 1 },
+        line: { color: '#34C759', width: 1 },
         connectgaps: false,
         xaxis: 'x',
         yaxis: 'y'
@@ -126,12 +127,12 @@ function createLineData(xEpsi, processedEpsi) {
 
 /**
  * Configures the layout of the plot based on domain and container dimensions.
- * @param {Object} domain - Plot domain.
- * @param {number} columns - Number of columns in the grid.
- * @param {Array} spectralData - Spectral data for width calculation.
- * @param {number} rows - Number of rows in the grid.
- * @param {Object} plotContainerRef - Reference to the plot container.
- * @param {Array} gridData - Grid data for plotting.
+ * @param {Object} domain Plot domain.
+ * @param {number} columns Number of columns in the grid.
+ * @param {Array} spectralData Spectral data for width calculation.
+ * @param {number} rows Number of rows in the grid.
+ * @param {Object} plotContainerRef Reference to the plot container.
+ * @param {Array} gridData Grid data for plotting.
  * @returns {Object} Layout configuration for the plot.
  */
 function configureLayout(domain, columns, spectralData, rows, plotContainerRef, gridData) {

@@ -1,24 +1,27 @@
 /**
- * AboutPage.js
- * 
- * This component renders the About Page for the HP MRI Web App. It provides insights into
- * the Penn Image-Guided Interventions (PIGI) Lab and introduces the development team.
- * Version 1.2.0 introduces a refined UI and the official title: HP MRI Web Application.
+ * @fileoverview AboutPage.js renders the About Page for the HP MRI Web Application. This component
+ * provides details about the Penn Image-Guided Interventions (PIGI) Lab and introduces the development
+ * team. Version 1.2.2 updates include refining the user interface and integrating additional
+ * information about the lab's focus and team contributions.
  *
- * @version 1.2.0
+ * @version 1.2.2
  * @author Benjamin Yoon
- * @date 2024-04-16
+ * @date 2024-04-29
  */
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './AboutPage.css'; // Styles for the About Page layout and content
+import './AboutPage.css'; // Importing CSS styles specific to the About Page.
 
+/**
+ * Functional component that renders the About Page content.
+ * @returns {JSX.Element} The About Page component.
+ */
 function AboutPage() {
   return (
     <div className="about-page">
       <h1>About</h1>
-      {/* PIGI Lab Section */}
+      {/* Section about the PIGI Lab */}
       <section className="about-section">
         <h2>
           <a href="https://www.pigilab.com/" target="_blank" rel="noopener noreferrer" className="pigilab-link">
@@ -26,32 +29,32 @@ function AboutPage() {
           </a>
         </h2>
         <p>
-          The Penn Image-Guided Interventions Lab is part of the Departments of Radiology and
-          Cancer Biology in the Perelman School of Medicine at the University of Pennsylvania.
-          The lab focuses on translational research for developing novel imaging approaches
-          and advanced therapeutics in interventional radiology. Our research is motivated by
-          clinical needs and aims to bridge bench-to-bedside gaps in diagnosis and treatment.
+          The Penn Image-Guided Interventions Lab, part of the Departments of Radiology and
+          Cancer Biology at the Perelman School of Medicine, University of Pennsylvania,
+          focuses on translational research that develops novel imaging approaches and
+          advanced therapeutics in interventional radiology, aiming to bridge gaps from
+          bench-to-bedside in diagnosis and treatment.
         </p>
       </section>
-      {/* Author and Team Section */}
+      {/* Section introducing the team */}
       <section className="author-section">
         <h2>Medcap Computing</h2>
         <h3>Terence P. Gade, MD, PhD</h3>
         <p>Co-Director of PIGI Lab, Assistant Professor of Radiology and Cancer Biology</p>
-        <h3>Alexander “Shurik” Zavriyev, mS</h3>
+        <h3>Alexander “Shurik” Zavriyev, MS</h3>
         <p>PhD student, focusing on HP imaging applications in clinical models</p>
         <h3>Team Lead Developer: Benjamin Yoon</h3>
         <p>
-          B.S.E. student at the University of Pennsylvania, developing impactful software solutions. Benjamin's work
-          showcases his commitment to leveraging technology for transformative purposes.
+          B.S.E. student at the University of Pennsylvania, developing impactful software solutions.
+          Benjamin's work showcases his commitment to leveraging technology for transformative purposes.
         </p>
         <h3>Steve Kadlecek</h3>
         <h3>Zihao Zhou</h3>
       </section>
-      {/* Navigation back to the main app page */}
+      {/* Link to navigate back to the main application page */}
       <Link to="/" className="back-to-home">Back to HP MRI Web Application</Link>
     </div>
   );
 }
 
-export default AboutPage;
+export default AboutPage; // Exporting the AboutPage component for routing in App.js.

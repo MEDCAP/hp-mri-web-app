@@ -1,12 +1,14 @@
 /**
- * @fileoverview Styles for the HP MRI data visualization tool. Provides layout control,
- * alignment for images and plots, and consistent theming across the application.
+ * @fileoverview Defines global styles for the HP MRI data visualization tool. 
+ * This includes layout controls, alignment for images and plots, and consistent theming 
+ * across the application. Updated to support additional UI elements in Version 1.2.2.
+ *
  * @author Benjamin Yoon
- * @date 2024-04-26
- * @version 1.2.1
+ * @date 2024-04-29
+ * @version 1.2.2
  */
 
-/* Base layout styles */
+/* General layout and styling */
 .App {
   display: flex;
   flex-direction: column;
@@ -16,7 +18,7 @@
   /* black */
 }
 
-/* Control panel styles */
+/* Control panel specific styles */
 .slider-container {
   position: fixed;
   left: 0;
@@ -37,7 +39,7 @@
   margin-top: 90px;
 }
 
-/* Styles for headings inside the control panel */
+/* Heading styles within the control panel */
 .slider-container h2 {
   font-size: 15px;
   margin-bottom: 10px;
@@ -45,12 +47,12 @@
   align-items: center;
 }
 
-/* Input range styles within the slider container */
+/* Styles for range inputs within the slider container */
 .slider-container input[type="range"] {
   width: 100%;
 }
 
-/* Image and plot container */
+/* Container for image and plot elements */
 .image-and-plot-container {
   position: relative;
   width: 100vw;
@@ -59,7 +61,7 @@
   align-items: center;
 }
 
-/* Styles for image and plot positioning within their container */
+/* Positioning styles for image and plot within their container */
 .proton-image,
 .plot-container {
   position: absolute;
@@ -75,7 +77,6 @@
   /* maintain aspect ratio */
 }
 
-/* Styling for the plot container */
 .plot-container {
   width: 53.5vw;
   height: 40.125vw;
@@ -83,7 +84,7 @@
   transform: translate(-72.35%, -71%);
 }
 
-/* Button styles */
+/* Styles for various buttons and button containers */
 .button-container,
 .reset-button-container,
 .icon-button-container,
@@ -175,12 +176,10 @@ footer a {
   text-decoration: none;
 }
 
-/* Hover effect for links within the footer */
 footer a:hover {
   text-decoration: underline;
 }
 
-/* Keyframe animations for branding elements */
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
@@ -192,7 +191,7 @@ footer a:hover {
 }
 
 /* Additional styles */
-.epsi-radio-buttons {
+.hp-mri-radio-buttons {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -214,7 +213,7 @@ footer a:hover {
   transition: box-shadow 0.3s ease;
   display: inline-block;
   margin: 5px;
-  margin-left: 620px;
+  margin-left: 645px;
   text-align: center;
 }
 
@@ -302,7 +301,7 @@ footer a:hover {
   /* Teal highlight */
 }
 
-.epsi-button-text,
+.hp-mri-button-text,
 .button-text,
 .button-text-shift,
 .button-text-reset,
@@ -314,7 +313,7 @@ footer a:hover {
   display: block;
 }
 
-.epsi-button-text {
+.hp-mri-button-text {
   margin-left: 7.5px;
 }
 
@@ -464,12 +463,6 @@ footer a:hover {
   /* Block-level to respect margin-bottom */
 }
 
-/* Custom variables for dynamic offset application */
-:root {
-  --epsi-grid-offset-x: 0px;
-  --epsi-grid-offset-y: 0px;
-}
-
 .button img {
   width: 100%;
   /* Make the image fill the button */
@@ -500,4 +493,19 @@ footer a:hover {
 
 .get-voxels-button {
   margin-bottom: 5px;
+}
+
+.magnet-select-container {
+  display: flex;
+  flex-direction: column-reverse;
+  /* This makes the label appear below the dropdown */
+  margin-left: 200px;
+  margin-top: 15px;
+}
+
+.magnet-select-container label {
+  margin-top: 15px;
+  /* Adds space between the dropdown and the label */
+  color: #6c6c70;
+  /* Adjusts the color for better visibility, match your design */
 }

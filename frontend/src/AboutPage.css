@@ -1,94 +1,92 @@
-/* AboutPage.css
- * 
- * Defines the styling for the About Page of the EPSI App. This includes typography,
- * layout adjustments, and interactive link effects. The styling aims to create a
- * readable, engaging, and consistent visual experience for users seeking information
- * about the project and its contributors.
- * 
- * Version: 1.1.1
- * Author: Benjamin Yoon
- * Date: 2024-03-15
+/**
+ * @fileoverview Defines CSS for the About Page of the HP MRI Web App. 
+ * Styles focus on typography, layout, and interactive link effects, enhancing the user
+ * experience by ensuring readability, engagement, and visual consistency.
+ *
+ * @version 1.2.2
+ * @author Benjamin Yoon
+ * @date 2024-04-29
  */
 
-/* Container for the entire About Page content */
+/* Primary container for the About Page */
 .about-page {
     max-width: 800px;
-    /* Ensures content is legible on wide screens */
+    /* Constrains width for readability on wider screens */
     margin: auto;
-    /* Centers the content horizontally */
+    /* Centers content horizontally within the parent element */
     padding: 20px;
-    /* Adds padding around the content for spacing */
+    /* Adds padding around content for better spacing */
     color: #333;
-    /* Dark grey color for text for better readability */
+    /* Sets text color to dark grey for improved readability */
     font-family: Arial, sans-serif;
-    /* Default font for consistency across devices */
+    /* Uses Arial for consistent typography across devices */
 }
 
-/* Styling for sections detailing PIGI Lab and the author/team */
+/* General styling for sections detailing PIGI Lab and the development team */
 .about-section,
 .author-section {
     margin-bottom: 20px;
-    /* Adds space between sections */
+    /* Space between consecutive sections */
 }
 
-/* Heading 1 style for the page title */
+/* Styles for the main page title */
 h1 {
     text-align: center;
-    /* Centers the title */
+    /* Aligns title text to the center of the page */
     margin-bottom: 40px;
-    /* Adds space below the title */
+    /* Space below the title */
 }
 
-/* Heading 2 style for section titles */
+/* Styles for secondary headings used as section titles */
 h2 {
     color: #0056b3;
-    /* Blue color for emphasis and visual hierarchy */
+    /* Blue color for visual emphasis and hierarchy */
 }
 
-/* Links to PIGI Lab, styled to fit within the text flow */
+/* Custom link styles for PIGI Lab website references */
 .pigilab-link {
     color: #0056b3;
-    /* Ensures consistency with h2 color */
+    /* Blue color for consistency with h2 elements */
     text-decoration: none;
-    /* Removes default underline */
+    /* No underline to keep the design clean */
 }
 
 .pigilab-link:hover {
     text-decoration: underline;
-    /* Adds underline on hover for user interaction */
+    /* Underline on hover for interactivity */
 }
 
-/* Heading 3 style for subsection titles within the author section */
+/* Styles for tertiary headings within the author section */
 h3 {
     color: #0056b3;
-    /* Same blue color for consistency and emphasis */
+    /* Maintains blue color for visual consistency */
 }
 
-/* Paragraph style for improved readability */
+/* Paragraph styling for enhanced readability */
 p {
     text-align: justify;
-    /* Justifies text for a cleaner look */
+    /* Justifies text for a uniform, clean layout */
     line-height: 1.6;
-    /* Increases line height for better readability */
+    /* Increases line spacing for easier reading */
 }
 
-/* Back to Home link styling */
+/* Styles for the 'Back to Home' navigation link */
 .back-to-home {
     display: block;
-    /* Ensures the link is on its own line */
+    /* Block display to ensure it occupies its own line */
     text-align: center;
-    /* Centers the link */
+    /* Aligns the link text to the center */
     margin-top: 40px;
-    /* Adds space above the link */
+    /* Space above the link */
     color: #0056b3;
-    /* Consistent blue color for visual consistency */
+    /* Blue color for visual consistency and emphasis */
     text-decoration: none;
-    /* Removes default underline */
+    /* No underline to maintain a clean appearance */
     font-weight: bold;
-    /* Makes the text bold for emphasis */
+    /* Bold font for emphasis */
 }
 
 .back-to-home:hover {
     text-decoration: underline;
-    /* Adds underline on hover for clarity */
+    /* Underline on hover for visual feedback */
 }

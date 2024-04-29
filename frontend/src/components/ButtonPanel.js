@@ -1,43 +1,43 @@
 /**
  * @fileoverview ButtonPanel.js renders a panel containing interactive buttons for various
- * functionalities within the HP MRI Web Application. It allows users to toggle EPSI plot
+ * functionalities within the HP MRI Web Application. It allows users to toggle HP MRI Data plot
  * visibility, adjust plot position, save the current state as an image, upload datasets,
- * and adjust the threshold for data display.
+ * adjust the threshold for data display, and choose from multiple magnet types.
  *
- * @version 1.2.1
+ * @version 1.2.2
  * @author Benjamin Yoon
- * @date 2024-04-26
+ * @date 2024-04-29
  */
 
 import React, { useState, useRef } from 'react';
 import html2canvas from 'html2canvas';
-import saveIcon from './icons/saveicon.png';
+import saveIcon from './icons/save.png';
 import databaseIcon from './icons/database.png'
-import right from './icons/right.png';
-import up from './icons/up.png';
-import left from './icons/left.png';
-import down from './icons/down.png';
-import reset from './icons/reset.png';
+import rightIcon from './icons/right.png';
+import upIcon from './icons/up.png';
+import leftIcon from './icons/left.png';
+import downIcon from './icons/down.png';
+import resetIcon from './icons/reset.png';
 
 function ButtonPanel({
-    toggleEpsi, onMoveUp, onMoveLeft, onMoveDown, onMoveRight, onResetPlotShift,
-    onFileUpload, onThresholdChange, toggleSelecting, selecting, setSelectedGroup,
-    selectedGroup, resetVoxels, thresholdValue
+    toggleHpMriData, onMoveUp, onMoveLeft, onMoveDown, onMoveRight, onResetPlotShift,
+    onFileUpload, onThresholdChange, onToggleSelecting, onSelecting, onSetSelectedGroup,
+    selectedGroup, onResetVoxels, threshold, onMagnetTypeChange
 }) {
-    const [isEpsiOn, setIsEpsiOn] = useState(false);
+    const [isHpMriDataOn, setIsHpMriDataOn] = useState(false);
     const fileInputRef = useRef();
 
     /**
-     * Toggles EPSI plot visibility.
-     * @param {string} newStatus - 'on' to show the EPSI plot, 'off' to hide it.
+     * Toggles the visibility of the HP MRI plot.
+     * @param {string} newStatus - 'on' to show the HP MRI plot, 'off' to hide it.
      */
-    const handleToggleEpsi = (newStatus) => {
-        setIsEpsiOn(newStatus === 'on');
-        toggleEpsi(newStatus === 'on');
+    const handleToggleHpMriData = (newStatus) => {
+        setIsHpMriDataOn(newStatus === 'on');
+        toggleHpMriData(newStatus === 'on');
     };
 
     /**
-     * Handles directional movement of the EPSI plot.
+     * Handles directional movement of the HP MRI plot.
      * @param {string} direction - The direction to move the plot ('up', 'down', 'left', 'right').
      */
     const handleMove = (direction) => {
@@ -87,6 +87,11 @@ function ButtonPanel({
         }
     };
 
+    // Handles changing the magnet type
+    const handleMagnetTypeChange = (event) => {
+        onMagnetTypeChange(event.target.value);
+    };
+
     return (
         <div className="top-panel">
             <div className="icon-button-container">
@@ -110,45 +115,45 @@ function ButtonPanel({
                 <span className="button-text">Save</span>
             </div>
 
-            <div className="epsi-radio-buttons">
+            <div className="hp-mri-radio-buttons">
                 <label className="radio-button-label">
                     <input
                         type="radio"
-                        name="epsiStatus"
+                        name="hpMriStatus"
                         value="on"
-                        checked={isEpsiOn}
-                        onChange={() => handleToggleEpsi('on')}
+                        checked={isHpMriDataOn}
+                        onChange={() => handleToggleHpMriData('on')}
                     />
                     ON
                 </label>
                 <label className="radio-button-label">
                     <input
                         type="radio"
-                        name="epsiStatus"
+                        name="hpMriStatus"
                         value="off"
-                        checked={!isEpsiOn}
-                        onChange={() => handleToggleEpsi('off')}
+                        checked={!isHpMriDataOn}
+                        onChange={() => handleToggleHpMriData('off')}
                     />
                     OFF
                 </label>
-                <span className="epsi-button-text">EPSI</span>
+                <span className="hp-mri-button-text">Plot Data</span>
             </div>
 
             <div className="button-container">
                 <div className="top-button-group">
                     <button className="button" onClick={() => handleMove('up')}>
-                        <img src={up} alt="Up" />
+                        <img src={upIcon} alt="Up" />
                     </button>
                 </div>
                 <div className="bottom-button-group">
                     <button className="button" onClick={() => handleMove('left')}>
-                        <img src={left} alt="Left" />
+                        <img src={leftIcon} alt="Left" />
                     </button>
                     <button className="button" onClick={() => handleMove('down')}>
-                        <img src={down} alt="Down" />
+                        <img src={downIcon} alt="Down" />
                     </button>
                     <button className="button" onClick={() => handleMove('right')}>
-                        <img src={right} alt="Right" />
+                        <img src={rightIcon} alt="Right" />
                     </button>
                 </div>
                 <span className="button-text-shift">Plot shift</span>
@@ -156,25 +161,25 @@ function ButtonPanel({
 
             <div className="reset-button-container">
                 <button className="reset-button" onClick={onResetPlotShift}>
-                    <img src={reset} alt="Plot reset" className="button-reset" />
+                    <img src={resetIcon} alt="Plot reset" className="button-reset" />
                 </button>
                 <span className="button-text-reset">Plot reset</span>
             </div>
 
             <div className="icon-button-container">
-                <button className="get-voxels-button" onClick={toggleSelecting}>
-                    {selecting ? 'Stop Selecting' : 'Get Voxels'}
+                <button className="get-voxels-button" onClick={onToggleSelecting}>
+                    {onSelecting ? 'Stop Selecting' : 'Get Voxels'}
                 </button>
-                <button className="get-voxels-button" onClick={resetVoxels}>
+                <button className="get-voxels-button" onClick={onResetVoxels}>
                     {'Reset'}
                 </button>
                 <div>
                     <label>
-                        <input type="radio" checked={selectedGroup === 'A'} onChange={() => setSelectedGroup('A')} />
+                        <input type="radio" checked={selectedGroup === 'A'} onChange={() => onSetSelectedGroup('A')} />
                         Group A
                     </label>
                     <label>
-                        <input type="radio" checked={selectedGroup === 'B'} onChange={() => setSelectedGroup('B')} />
+                        <input type="radio" checked={selectedGroup === 'B'} onChange={() => onSetSelectedGroup('B')} />
                         Group B
                     </label>
                 </div>
@@ -187,7 +192,7 @@ function ButtonPanel({
                     min="0"
                     max="1"
                     step="0.1"
-                    value={thresholdValue}
+                    value={threshold}
                     onChange={onThresholdChange}
                     className="image-slice-slider"
                 />
@@ -202,8 +207,18 @@ function ButtonPanel({
                         fontSize: '15px',
                         padding: '2px 5px',
                     }}
-                >{thresholdValue}</label>
+                >{threshold}</label>
                 <span className="slider-threshold-text">Threshold</span>
+            </div>
+
+            {/* Magnet Type Selection Dropdown */}
+            <div className="magnet-select-container">
+                <label htmlFor="magnet-select">Choose a magnet</label>
+                <select id="magnet-select" onChange={handleMagnetTypeChange} defaultValue="HUPC">
+                    <option value="HUPC">HUPC</option>
+                    <option value="Clinical">Clinical</option>
+                    <option value="MR Solutions">MR Solutions</option>
+                </select>
             </div>
         </div>
     );
